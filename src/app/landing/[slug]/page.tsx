@@ -122,6 +122,7 @@ export default async function LandingPage({ params }: Props) {
     notFound();
   }
 
+  
   const layoutConfig: LayoutConfig = JSON.parse(page.layoutConfig || '{"blocks":[]}');
   
   // Collect all asset IDs and fetch assets
