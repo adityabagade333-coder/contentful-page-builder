@@ -1,37 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Contentful Page Builder - Frontend
 
-## Getting Started
+Next.js application that renders landing pages using configurations built in Contentful.
 
-First, run the development server:
+## Live Demo
+
+https://contentful-page-builder.vercel.app
+
+## Features
+
+- Static site generation (SSG) with Next.js App Router
+- Dynamic landing pages from Contentful configurations
+- 3 responsive components: Hero, Two Column, Image Grid
+- SEO optimization with dynamic metadata
+- JSON-LD structured data
+
+## Tech Stack
+
+- Next.js 15.3+ (App Router, TypeScript)
+- CSS Modules for styling
+- Contentful GraphQL API
+- Next.js Image optimization
+
+## Setup
+
+### Prerequisites
+- Node.js 18+
+- Contentful space with landing page content
+
+### Installation
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Create `.env.local`:
+
+```bash
+CONTENTFUL_SPACE_ID=your_space_id
+CONTENTFUL_ACCESS_TOKEN=your_delivery_token
+CONTENTFUL_PREVIEW_ACCESS_TOKEN=your_preview_token
+CONTENTFUL_ENVIRONMENT=master
+NEXT_PUBLIC_SITE_URL=https://contentful-page-builder.vercel.app
+NEXT_PUBLIC_CONTENTFUL_APP_URL=https://contentful-app-one.vercel.app
+```
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/` - Homepage
+- `/landing/page-1` - First landing page
+- `/landing/page-2` - Second landing page
+- `/landing/[slug]` - Dynamic landing pages
 
-## Learn More
+## Content Structure
 
-To learn more about Next.js, take a look at the following resources:
+Landing pages are built from JSON configurations stored in Contentful. Each page can contain multiple blocks rendered in sequence.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Block Types
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Hero Block**
+   - Full-width banner with background image
+   - Heading, subtitle, and call-to-action button
 
-## Deploy on Vercel
+2. **Two Column Block**
+   - Left: Text content (heading, subtitle, CTA)
+   - Right: Featured image
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Image Grid Block**
+   - 2x2 grid of images with hover effects
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# contentful-page-builder
+## Deployment
+
+Deployed on Vercel with automatic deployments from GitHub main branch.
+
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── landing/[slug]/    # Dynamic landing pages
+│   ├── layout.tsx         # Root layout with navigation
+│   └── globals.css        # Global styles
+├── components/
+│   ├── blocks/           # Landing page components
+│   └── Navigation/       # Site navigation
+├── lib/
+│   ├── contentful.ts     # GraphQL client
+│   └── seo.ts           # SEO utilities
+└── types/
+    └── index.ts         # TypeScript definitions
+```
