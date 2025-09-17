@@ -40,18 +40,20 @@ function collectAssetIds(blocks: BlockType[]): string[] {
   blocks.forEach(block => {
     switch (block.type) {
       case 'hero':
-        if (block.data.backgroundImage?.sys?.id) {
+        if (block.data.backgroundImage?.sys?.id && !block.data.backgroundImage.url?.startsWith('http')) {
           assetIds.push(block.data.backgroundImage.sys.id);
         }
         break;
       case 'twoColumn':
-        if (block.data.image?.sys?.id) {
+        if (block.data.image?.sys?.id && !block.data.image.url?.startsWith('http')) {
           assetIds.push(block.data.image.sys.id);
         }
         break;
       case 'imageGrid':
         block.data.images?.forEach(img => {
-          if (img.sys?.id) assetIds.push(img.sys.id);
+          if (img.sys?.id && !img.url?.startsWith('http')) {
+            assetIds.push(img.sys.id);
+          }
         });
         break;
     }
@@ -67,26 +69,43 @@ function hydrateBlocksWithAssets(blocks: BlockType[], assets: Asset[]): BlockTyp
   return blocks.map(block => {
     switch (block.type) {
       case 'hero':
-        const heroAsset = assetMap.get(block.data.backgroundImage?.sys?.id);
-        return heroAsset ? {
-          ...block,
-          data: { ...block.data, backgroundImage: heroAsset }
-        } : block;
+        // Only hydrate if it's not already a full URL (placeholder)
+        if (block.data.backgroundImage?.sys?.id && !block.data.backgroundImage.url?.startsWith('http')) {
+          const heroAsset = assetMap.get(block.data.backgroundImage.sys.id);
+          return heroAsset ? {
+            ...block,
+            data: { ...block.data, backgroundImage: heroAsset }
+          } : block;
+        }
+        return block;
         
       case 'twoColumn':
-        const twoColAsset = assetMap.get(block.data.image?.sys?.id);
-        return twoColAsset ? {
-          ...block,
-          data: { ...block.data, image: twoColAsset }
-        } : block;
+        // Only hydrate if it's not already a full URL (placeholder)
+        if (block.data.image?.sys?.id && !block.data.image.url?.startsWith('http')) {
+          const twoColAsset = assetMap.get(block.data.image.sys.id);
+          return twoColAsset ? {
+            ...block,
+            data: { ...block.data, image: twoColAsset }
+          } : block;
+        }
+        return block;
         
       case 'imageGrid':
-        const hydratedImages = block.data.images
-          .map(img => assetMap.get(img.sys?.id))
-          .filter(Boolean) as Asset[];
+        // For image grid, preserve existing images with URLs and only hydrate Contentful assets
+        const processedImages = block.data.images.map(img => {
+          if (img.url?.startsWith('http')) {
+            // Keep placeholder images as they are
+            return img;
+          } else if (img.sys?.id) {
+            // Try to hydrate with Contentful asset
+            return assetMap.get(img.sys.id) || img;
+          }
+          return img;
+        }).filter(Boolean);
+        
         return {
           ...block,
-          data: { ...block.data, images: hydratedImages }
+          data: { ...block.data, images: processedImages }
         };
         
       default:
